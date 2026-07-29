@@ -107,10 +107,10 @@ Create a `.env` file
 
 ```env
 DB_HOST=localhost
-DB_USER=your_username
-DB_PASSWORD=your_password
+DB_USER=root
+DB_PASSWORD=root
 DB_NAME=task_manager
-JWT_SECRET_KEY=your_secret_key
+JWT_SECRET_KEY=TaskManagerSecretKey@2026
 ```
 
 Run the backend
@@ -141,19 +141,6 @@ npm run dev
 
 ---
 
-## 📸 Screenshots
-
-You can add screenshots here after uploading them.
-
-Example:
-
-```
-screenshots/login.png
-screenshots/dashboard.png
-```
-
----
-
 ## Future Improvements
 
 - Search Tasks
@@ -170,7 +157,7 @@ screenshots/dashboard.png
 
 **Kiran**
 
-GitHub: https://github.com/YOUR_USERNAME
+GitHub: https://github.com/saikiran0563
 
 ---
 
