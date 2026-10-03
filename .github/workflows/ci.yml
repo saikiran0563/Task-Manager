@@ -18,8 +18,14 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install backend test dependencies
+        run: python -m pip install -r backend/requirements.txt pytest
+
       - name: Compile backend
         run: python -m compileall backend
+
+      - name: Run backend unit tests
+        run: pytest -q backend/test_task_routes.py
 
   frontend:
     runs-on: ubuntu-latest
