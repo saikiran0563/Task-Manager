@@ -82,6 +82,8 @@ DB_PASSWORD=your_mysql_password
 DB_NAME=task_manager
 JWT_SECRET_KEY=replace_with_a_long_random_secret
 CORS_ORIGINS=http://localhost:5173
+FLASK_DEBUG=false
+PORT=5000
 ```
 
 **Never commit real passwords, API keys, JWT secrets, or other credentials.**
@@ -165,8 +167,13 @@ GET /api/health
 GitHub Actions runs basic checks on pushes and pull requests:
 
 - Python syntax compilation
+- Backend unit tests with pytest
 - Frontend dependency installation
 - Frontend production build
+
+## 🧪 Current Test Coverage
+
+The current backend test suite validates task input/date parsing helpers and allowed task status/priority values. Full API integration coverage is a planned enhancement.
 
 ## 🔭 Possible Enhancements
 
