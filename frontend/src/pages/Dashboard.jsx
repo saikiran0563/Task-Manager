@@ -96,8 +96,10 @@ export default function Dashboard() {
       setTasks((current) => current.map((task) => task.id === id ? response.data : task));
       setError("");
       await loadActivity();
+      return true;
     } catch (err) {
       setError(err.response?.data?.error || "Could not update this task.");
+      return false;
     }
   };
 
