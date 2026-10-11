@@ -212,3 +212,8 @@ a { color: var(--accent); }
   .task-action-row { justify-content: flex-start; }
   .share-form { grid-template-columns: 1fr; }
 }
+
+.task-edit-form { display: flex; flex-direction: column; gap: 2px; }
+.task-edit-form .field { margin-bottom: 8px; }
+.task-edit-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.task-edit-form .task-action-row { justify-content: flex-start; margin-top: 4px; }
