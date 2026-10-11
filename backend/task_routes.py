@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from sqlalchemy import or_
+from sqlalchemy import and_, or_
 
 from extensions import db
 from models import ActivityLog, Task, TaskShare, User
@@ -100,17 +100,21 @@ def create_task():
     if not isinstance(data, dict):
         return jsonify({"error": "a JSON object is required"}), 400
 
-    title = (data.get("title") or "").strip()
+    if not isinstance(data.get("title"), str):
+        return jsonify({"error": "title must be a string"}), 400
+    title = data["title"].strip()
     if not title:
         return jsonify({"error": "title is required"}), 400
+    if not isinstance(data.get("description", ""), str):
+        return jsonify({"error": "description must be a string"}), 400
     if len(title) > 200:
         return jsonify({"error": "title must be 200 characters or fewer"}), 400
 
     status = data.get("status", "pending")
     priority = data.get("priority", "medium")
-    if status not in VALID_STATUS:
+    if not isinstance(status, str) or status not in VALID_STATUS:
         return jsonify({"error": "invalid task status"}), 400
-    if priority not in VALID_PRIORITY:
+    if not isinstance(priority, str) or priority not in VALID_PRIORITY:
         return jsonify({"error": "invalid task priority"}), 400
 
     due_value = data.get("due_date")
@@ -155,7 +159,9 @@ def update_task(task_id):
 
     changed = []
     if "title" in data:
-        title = (data.get("title") or "").strip()
+        if not isinstance(data.get("title"), str):
+            return jsonify({"error": "title must be a string"}), 400
+        title = data["title"].strip()
         if not title:
             return jsonify({"error": "title cannot be empty"}), 400
         if len(title) > 200:
@@ -164,18 +170,20 @@ def update_task(task_id):
             task.title = title
             changed.append("title")
     if "description" in data:
-        description = (data.get("description") or "").strip()
+        if not isinstance(data.get("description"), str):
+            return jsonify({"error": "description must be a string"}), 400
+        description = data["description"].strip()
         if description != (task.description or ""):
             task.description = description
             changed.append("description")
     if "status" in data:
-        if data["status"] not in VALID_STATUS:
+        if not isinstance(data["status"], str) or data["status"] not in VALID_STATUS:
             return jsonify({"error": "invalid task status"}), 400
         if data["status"] != task.status:
             task.status = data["status"]
             changed.append("status")
     if "priority" in data:
-        if data["priority"] not in VALID_PRIORITY:
+        if not isinstance(data["priority"], str) or data["priority"] not in VALID_PRIORITY:
             return jsonify({"error": "invalid task priority"}), 400
         if data["priority"] != task.priority:
             task.priority = data["priority"]
@@ -237,11 +245,13 @@ def share_task(task_id):
     if not isinstance(data, dict):
         return jsonify({"error": "a JSON object is required"}), 400
 
-    email = (data.get("email") or "").strip().lower()
+    if not isinstance(data.get("email"), str):
+        return jsonify({"error": "collaborator email must be a string"}), 400
+    email = data["email"].strip().lower()
     role = data.get("role", "viewer")
     if not email:
         return jsonify({"error": "collaborator email is required"}), 400
-    if role not in VALID_SHARE_ROLES:
+    if not isinstance(role, str) or role not in VALID_SHARE_ROLES:
         return jsonify({"error": "role must be viewer or editor"}), 400
 
     collaborator = User.query.filter_by(email=email).first()
@@ -294,9 +304,9 @@ def list_activity():
     user_id = int(get_jwt_identity())
     query = ActivityLog.query.outerjoin(Task, ActivityLog.task_id == Task.id).filter(
         or_(
-            ActivityLog.actor_id == user_id,
             Task.user_id == user_id,
             Task.shares.any(TaskShare.shared_with_user_id == user_id),
+            and_(ActivityLog.task_id.is_(None), ActivityLog.actor_id == user_id),
         )
     )
     limit = request.args.get("limit", default=20, type=int)
