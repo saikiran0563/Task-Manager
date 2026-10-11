@@ -166,6 +166,7 @@ a { color: var(--accent); }
 .task-actions select { max-width: 145px; width: 100%; border: 1px solid var(--line); border-radius: 9px; padding: 8px; font-size: .77rem; color: var(--text); background: #0d131d; }
 .task-action-row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 .shared-label { color: var(--accent); font-size: .72rem; font-weight: 700; }
+.overdue-label { color: var(--red); font-weight: 700; }
 .empty-state { text-align: center; padding: 42px 20px; color: var(--muted); border: 1px dashed #334057; border-radius: 14px; }
 .empty-state .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; margin-bottom: 10px; }
 .empty-state p { margin: 0; }
