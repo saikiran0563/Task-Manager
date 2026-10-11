@@ -1,6 +1,11 @@
 from datetime import date
 
-from task_routes import _parse_due_date, VALID_PRIORITY, VALID_STATUS
+from task_routes import (
+    VALID_PRIORITY,
+    VALID_SHARE_ROLES,
+    VALID_STATUS,
+    _parse_due_date,
+)
 
 
 def test_parse_due_date_valid():
@@ -15,6 +20,7 @@ def test_parse_due_date_empty_returns_none():
 def test_parse_due_date_invalid_returns_none():
     assert _parse_due_date("03-10-2026") is None
     assert _parse_due_date("not-a-date") is None
+    assert _parse_due_date({"date": "2026-10-03"}) is None
 
 
 def test_allowed_task_statuses():
@@ -23,3 +29,7 @@ def test_allowed_task_statuses():
 
 def test_allowed_task_priorities():
     assert VALID_PRIORITY == {"low", "medium", "high"}
+
+
+def test_allowed_collaboration_roles():
+    assert VALID_SHARE_ROLES == {"viewer", "editor"}
