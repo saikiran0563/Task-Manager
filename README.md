@@ -1,47 +1,32 @@
-# 📝 Task Manager
+# Task Manager
 
-A full-stack task management application built with **React**, **Flask**, and **MySQL**. It includes user registration/login, JWT-based authentication, protected task APIs, and CRUD operations for personal tasks.
+A full-stack task management application built with **Python, Flask, React, JavaScript, and MySQL**. The application lets users register, log in, and manage their own tasks through a REST API.
 
-## ✨ Features
+## Features
 
 - User registration and login
-- Password hashing with Flask-Bcrypt
-- JWT authentication and protected routes
-- Create, read, update, and delete tasks
-- Task status: pending, in progress, done
-- Task priority: low, medium, high
+- Password hashing
+- JWT-based authentication and protected API routes
+- Create, view, update, and delete tasks (CRUD)
+- Task status: pending, in progress, and done
+- Task priority: low, medium, and high
 - Optional due dates
-- Per-user task isolation
-- REST-style JSON API
-- React frontend with client-side routing
-- CORS configuration for local development
+- User-specific task data
+- React frontend connected to the Flask API
 
-## 🧱 Architecture
+## Technologies used
 
-```text
-React + Vite
-    │
-    │ HTTP / JSON
-    ▼
-Flask REST API
-    │
-    │ SQLAlchemy / PyMySQL
-    ▼
-MySQL
-```
-
-## 🛠️ Tech Stack
-
-| Layer | Technologies |
+| Area | Technologies |
 |---|---|
-| Frontend | React 18, Vite, JavaScript, CSS, Axios, React Router |
-| Backend | Flask 3, Flask-SQLAlchemy, Flask-JWT-Extended, Flask-Bcrypt, Flask-CORS |
-| Database | MySQL 8 |
-| Database driver | PyMySQL |
+| Languages | Python, JavaScript, HTML, CSS, SQL |
+| Frontend | React, Vite, Axios, React Router |
+| Backend | Flask, Flask-SQLAlchemy, Flask-JWT-Extended, Flask-Bcrypt, Flask-CORS |
+| Database | MySQL |
+| Database connection | PyMySQL |
 | Configuration | python-dotenv |
-| Server dependency | Gunicorn |
+| Version control | Git and GitHub |
 
-## 📂 Project Structure
+## Project structure
 
 ```text
 Task-Manager/
@@ -52,145 +37,104 @@ Task-Manager/
 │   ├── extensions.py
 │   ├── models.py
 │   ├── task_routes.py
+│   ├── test_task_routes.py
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
 │   ├── index.html
 │   ├── package.json
-│   ├── package-lock.json
 │   └── vite.config.js
 ├── .github/workflows/ci.yml
 ├── .gitignore
 └── README.md
 ```
 
-## 🔐 Configuration
+## Run locally on Windows
 
-Create `backend/.env` locally from the example file:
+### 1. Clone the repository
 
-```bash
-cd backend
-copy .env.example .env
-```
-
-Then replace the placeholders with your local values:
-
-```env
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_mysql_password
-DB_NAME=task_manager
-JWT_SECRET_KEY=replace_with_a_long_random_secret
-CORS_ORIGINS=http://localhost:5173
-FLASK_DEBUG=false
-PORT=5000
-```
-
-**Never commit real passwords, API keys, JWT secrets, or other credentials.**
-
-## 🚀 Run Locally
-
-### 1. Clone
-
-```bash
+```powershell
 git clone https://github.com/saikiran0563/Task-Manager.git
 cd Task-Manager
 ```
 
-### 2. Prepare MySQL
+### 2. Create the MySQL database
+
+Run this in MySQL:
 
 ```sql
 CREATE DATABASE task_manager;
 ```
 
-### 3. Backend
+### 3. Configure and run the backend
 
-```bash
+```powershell
 cd backend
 python -m venv venv
-venv\Scripts\activate
+.\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-copy .env.example .env
+Copy-Item .env.example .env
+```
+
+Open `.env` and set your local MySQL credentials and a private JWT secret. Do not commit `.env` or real credentials.
+
+Then start Flask:
+
+```powershell
 python app.py
 ```
 
-The API runs on `http://localhost:5000`.
+The API runs at `http://localhost:5000`.
 
-### 4. Frontend
+### 4. Run the frontend
 
-Open another terminal:
+Open a second terminal:
 
-```bash
+```powershell
 cd frontend
 npm install
 npm run dev
 ```
 
-The Vite development server runs on `http://localhost:5173`.
+Open the local URL printed by Vite (usually `http://localhost:5173`).
 
-## 🔌 API Endpoints
+## API endpoints
 
 ### Authentication
 
-| Method | Endpoint | Auth | Purpose |
-|---|---|---|---|
-| POST | `/api/auth/register` | No | Register a user |
-| POST | `/api/auth/login` | No | Login and receive JWT |
-| GET | `/api/auth/me` | JWT | Get the current user |
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | `/api/auth/register` | Register a user |
+| POST | `/api/auth/login` | Log in and receive a token |
+| GET | `/api/auth/me` | Get the authenticated user |
 
 ### Tasks
 
-| Method | Endpoint | Auth | Purpose |
-|---|---|---|---|
-| GET | `/api/tasks/` | JWT | List the current user's tasks |
-| GET | `/api/tasks/<task_id>` | JWT | Get one task |
-| POST | `/api/tasks/` | JWT | Create a task |
-| PUT | `/api/tasks/<task_id>` | JWT | Update a task |
-| DELETE | `/api/tasks/<task_id>` | JWT | Delete a task |
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/tasks/` | List the authenticated user's tasks |
+| GET | `/api/tasks/<task_id>` | Get one task |
+| POST | `/api/tasks/` | Create a task |
+| PUT | `/api/tasks/<task_id>` | Update a task |
+| DELETE | `/api/tasks/<task_id>` | Delete a task |
 
-Health check:
+Health check: `GET /api/health`
 
-```text
-GET /api/health
-```
+## Testing
 
-## 🧠 Engineering Notes
+The repository includes a small backend unit-test suite and a GitHub Actions workflow that checks Python syntax, runs the available backend tests, and builds the frontend. Run these checks locally before making changes.
 
-- Passwords are stored as bcrypt hashes, not plaintext.
-- JWT identity is used to scope task queries to the authenticated user.
-- Task status and priority values are constrained to known values.
-- Database configuration is loaded from environment variables.
-- The backend has centralized 404 and 500 JSON error handlers.
+## Possible future improvements
 
-## ✅ Automated Checks
+- Add more API integration tests
+- Improve invalid due-date validation
+- Add task search and filtering
+- Add screenshots and a live demo after deployment
 
-GitHub Actions runs basic checks on pushes and pull requests:
-
-- Python syntax compilation
-- Backend unit tests with pytest
-- Frontend dependency installation
-- Frontend production build
-
-## 🧪 Current Test Coverage
-
-The current backend test suite validates task input/date parsing helpers and allowed task status/priority values. Full API integration coverage is a planned enhancement.
-
-## 🔭 Possible Enhancements
-
-- Add automated backend API tests
-- Add database migrations with Alembic/Flask-Migrate
-- Add search, filtering, and pagination
-- Add refresh-token/session strategy
-- Add deployment configuration and live demo
-- Add frontend tests
-- Add OpenAPI documentation
-
-## 👤 Author
+## Author
 
 **Sai Kiran**
 
 GitHub: https://github.com/saikiran0563
-
-## 📄 License
 
 This project is for learning and portfolio purposes.
