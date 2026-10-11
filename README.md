@@ -42,6 +42,7 @@ Task-Manager/
 │   ├── models.py
 │   ├── task_routes.py
 │   ├── test_task_routes.py
+│   ├── test_collaboration_api.py
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
@@ -144,12 +145,12 @@ The backend currently calls SQLAlchemy's `create_all()` during startup. This cre
 
 ## Testing
 
-The GitHub Actions workflow compiles the backend, runs backend unit tests, and builds the React frontend. Run the checks locally before merging changes:
+The GitHub Actions workflow compiles the backend, runs backend unit and API tests (the API tests use an in-memory SQLite database), and builds the React frontend. Run the checks locally before merging changes:
 
 ```powershell
 # From the repository root, with the backend dependencies installed
 python -m compileall backend
-python -m pytest -q backend/test_task_routes.py
+python -m pytest -q backend
 
 # Frontend
 cd frontend
