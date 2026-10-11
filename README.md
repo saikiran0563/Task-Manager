@@ -1,18 +1,20 @@
 # Task Manager
 
-A full-stack task management application built with **Python, Flask, React, JavaScript, and MySQL**. The application lets users register, log in, and manage their own tasks through a REST API.
+A full-stack task management app built with **Python, Flask, React, JavaScript, and MySQL**. It combines task planning with lightweight collaboration, permission-aware sharing, and an activity timeline.
 
 ## Features
 
-- User registration and login
-- Password hashing
-- JWT-based authentication and protected API routes
-- Create, view, update, and delete tasks (CRUD)
-- Task status: pending, in progress, and done
-- Task priority: low, medium, and high
-- Optional due dates
-- User-specific task data
-- React frontend connected to the Flask API
+- Register and log in with password hashing and JWT authentication
+- Create, view, edit, and delete tasks
+- Track pending, in-progress, and completed work
+- Set task priority and optional due dates; overdue tasks are highlighted
+- Search tasks by title or description and filter by status
+- View dashboard metrics for total, in-progress, completed, and overdue tasks
+- Share an owned task with another registered user
+- Assign **viewer** access (read-only) or **editor** access (can update task details and status)
+- Review recent activity for task creation, edits, sharing, permission changes, and deletion
+- Protect task and collaboration APIs with JWT authentication and ownership checks
+- Responsive premium dark dashboard built with the existing React and CSS stack
 
 ## Technologies used
 
@@ -24,7 +26,9 @@ A full-stack task management application built with **Python, Flask, React, Java
 | Database | MySQL |
 | Database connection | PyMySQL |
 | Configuration | python-dotenv |
-| Version control | Git and GitHub |
+| Version control and CI | Git, GitHub, GitHub Actions |
+
+No additional frontend UI framework is required.
 
 ## Project structure
 
@@ -60,7 +64,7 @@ cd Task-Manager
 
 ### 2. Create the MySQL database
 
-Run this in MySQL:
+Run in MySQL:
 
 ```sql
 CREATE DATABASE task_manager;
@@ -76,7 +80,7 @@ pip install -r requirements.txt
 Copy-Item .env.example .env
 ```
 
-Open `.env` and set your local MySQL credentials and a private JWT secret. Do not commit `.env` or real credentials.
+Set your local MySQL credentials and a private JWT secret in `.env`. Never commit `.env` or real credentials.
 
 Then start Flask:
 
@@ -88,7 +92,7 @@ The API runs at `http://localhost:5000`.
 
 ### 4. Run the frontend
 
-Open a second terminal:
+Open a second terminal at the repository root:
 
 ```powershell
 cd frontend
@@ -100,6 +104,8 @@ Open the local URL printed by Vite (usually `http://localhost:5173`).
 
 ## API endpoints
 
+All task and collaboration endpoints below require a valid JWT access token unless noted otherwise.
+
 ### Authentication
 
 | Method | Endpoint | Purpose |
@@ -108,33 +114,56 @@ Open the local URL printed by Vite (usually `http://localhost:5173`).
 | POST | `/api/auth/login` | Log in and receive a token |
 | GET | `/api/auth/me` | Get the authenticated user |
 
-### Tasks
+### Tasks and activity
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| GET | `/api/tasks/` | List the authenticated user's tasks |
-| GET | `/api/tasks/<task_id>` | Get one task |
+| GET | `/api/tasks/` | List owned and shared tasks; optional `status` and `q` query parameters |
+| GET | `/api/tasks/<task_id>` | Get one accessible task |
 | POST | `/api/tasks/` | Create a task |
-| PUT | `/api/tasks/<task_id>` | Update a task |
-| DELETE | `/api/tasks/<task_id>` | Delete a task |
+| PUT | `/api/tasks/<task_id>` | Update an owned task or a shared task with editor permission |
+| DELETE | `/api/tasks/<task_id>` | Delete an owned task |
+| GET | `/api/tasks/activity?limit=12` | Get recent activity for accessible tasks |
+| GET | `/api/tasks/<task_id>/shares` | List collaborators (owner only) |
+| POST | `/api/tasks/<task_id>/shares` | Share with a registered user's email (owner only) |
+| DELETE | `/api/tasks/<task_id>/shares/<share_id>` | Remove collaborator access (owner only) |
 
-Health check: `GET /api/health`
+Health check: `GET /api/health`.
+
+### Collaboration rules
+
+- The collaborator must already have a Task Manager account.
+- **Viewer** can see a shared task but cannot edit or delete it.
+- **Editor** can update task fields and status, but cannot delete the task or manage its collaborators.
+- Only the owner can change sharing permissions or remove a collaborator.
+- Task activity is recorded by the backend and returned only for tasks the user can access (plus their own deleted-task event).
+
+## Database note
+
+The backend currently calls SQLAlchemy's `create_all()` during startup. This creates newly added tables, such as `task_shares` and `activity_logs`, when they are missing; it does not alter existing table columns. No existing `users` or `tasks` columns are changed by these collaboration features.
 
 ## Testing
 
-The repository includes a small backend unit-test suite and a GitHub Actions workflow that checks Python syntax, runs the available backend tests, and builds the frontend. Run these checks locally before making changes.
+The GitHub Actions workflow compiles the backend, runs backend unit tests, and builds the React frontend. Run the checks locally before merging changes:
 
-## Possible future improvements
+```powershell
+# From the repository root, with the backend dependencies installed
+python -m compileall backend
+python -m pytest -q backend/test_task_routes.py
 
-- Add more API integration tests
-- Improve invalid due-date validation
-- Add task search and filtering
-- Add screenshots and a live demo after deployment
+# Frontend
+cd frontend
+npm ci
+npm run build
+```
+
+## Current status
+
+This repository is being upgraded in a feature branch. Deployment and a public live-demo link will be added only after local behavior, automated checks, and production configuration have been verified.
 
 ## Author
 
-**Sai Kiran**
-
+**Sai Kiran**  
 GitHub: https://github.com/saikiran0563
 
 This project is for learning and portfolio purposes.
