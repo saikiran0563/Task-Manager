@@ -6,11 +6,17 @@ export default function TaskForm({ onCreate }) {
   const [priority, setPriority] = useState("medium");
   const [dueDate, setDueDate] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!title.trim()) return;
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!title.trim()) {
+      setError("Please enter a task title.");
+      return;
+    }
+
     setSubmitting(true);
+    setError("");
     try {
       await onCreate({
         title: title.trim(),
@@ -22,6 +28,8 @@ export default function TaskForm({ onCreate }) {
       setDescription("");
       setPriority("medium");
       setDueDate("");
+    } catch (err) {
+      setError(err.response?.data?.error || "Could not add the task. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -29,48 +37,53 @@ export default function TaskForm({ onCreate }) {
 
   return (
     <form className="task-form-card" onSubmit={handleSubmit}>
+      {error && <div className="error-banner">{error}</div>}
       <div className="task-form-grid">
         <div className="field span-2">
-          <label htmlFor="title">Task title</label>
+          <label htmlFor="task-title">Task title</label>
           <input
-            id="title"
+            id="task-title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g. Write project README"
+            onChange={(event) => setTitle(event.target.value)}
+            placeholder="e.g. Finish the project README"
+            maxLength={200}
             required
           />
         </div>
         <div className="field">
-          <label htmlFor="priority">Priority</label>
-          <select id="priority" value={priority} onChange={(e) => setPriority(e.target.value)}>
+          <label htmlFor="task-priority">Priority</label>
+          <select id="task-priority" value={priority} onChange={(event) => setPriority(event.target.value)}>
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
           </select>
         </div>
         <div className="field">
-          <label htmlFor="due">Due date</label>
+          <label htmlFor="task-due-date">Due date</label>
           <input
-            id="due"
+            id="task-due-date"
             type="date"
             value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
+            onChange={(event) => setDueDate(event.target.value)}
           />
         </div>
       </div>
-      <div className="field" style={{ marginTop: 4 }}>
-        <label htmlFor="desc">Description (optional)</label>
+      <div className="field">
+        <label htmlFor="task-description">Description <span className="form-hint">(optional)</span></label>
         <textarea
-          id="desc"
+          id="task-description"
           rows={2}
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Any extra detail..."
+          onChange={(event) => setDescription(event.target.value)}
+          placeholder="Add context or a next step…"
         />
       </div>
-      <button className="btn btn-primary" type="submit" disabled={submitting}>
-        {submitting ? "Adding..." : "Add task"}
-      </button>
+      <div className="form-footer">
+        <span className="form-hint">Keep it clear. You can edit the task later.</span>
+        <button className="btn btn-primary" type="submit" disabled={submitting}>
+          {submitting ? "Adding task…" : "+ Add task"}
+        </button>
+      </div>
     </form>
   );
 }

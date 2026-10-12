@@ -14,7 +14,7 @@ export default function Navbar() {
     <div className="topbar">
       <div className="brand">
         <span className="dot" />
-        Task Board
+        Task Manager
       </div>
       {user && (
         <div className="user-info">
