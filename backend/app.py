@@ -18,7 +18,11 @@ def create_app(test_config=None):
     db.init_app(app)
     jwt.init_app(app)
     bcrypt.init_app(app)
-    CORS(app, resources={r"/api/*": {"origins": Config.CORS_ORIGINS}}, supports_credentials=True)
+    CORS(
+        app,
+        resources={r"/api/*": {"origins": app.config["CORS_ORIGINS"]}},
+        supports_credentials=True,
+    )
 
     app.register_blueprint(auth_routes.auth_bp)
     app.register_blueprint(task_bp)
