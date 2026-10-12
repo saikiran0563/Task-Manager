@@ -2,7 +2,7 @@ import os
 
 # Use an isolated in-memory database when importing the Flask app for tests.
 os.environ["DATABASE_URL"] = "sqlite://"
-os.environ["JWT_SECRET_KEY"] = "task-manager-test-secret"
+os.environ["JWT_SECRET_KEY"] = "task-manager-tests-secret-key-at-least-32-bytes"
 
 import pytest
 
@@ -12,7 +12,7 @@ from extensions import db
 
 @pytest.fixture()
 def client():
-    app.config.update(TESTING=True, JWT_SECRET_KEY="task-manager-test-secret")
+    app.config.update(TESTING=True, JWT_SECRET_KEY="task-manager-tests-secret-key-at-least-32-bytes")
     with app.app_context():
         db.drop_all()
         db.create_all()
