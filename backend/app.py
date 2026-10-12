@@ -18,7 +18,11 @@ def create_app(test_config=None):
     db.init_app(app)
     jwt.init_app(app)
     bcrypt.init_app(app)
-    CORS(app, resources={r"/api/*": {"origins": Config.CORS_ORIGINS}}, supports_credentials=True)
+    CORS(
+        app,
+        resources={r"/api/*": {"origins": app.config["CORS_ORIGINS"]}},
+        supports_credentials=True,
+    )
 
     app.register_blueprint(auth_routes.auth_bp)
     app.register_blueprint(task_bp)
@@ -46,4 +50,4 @@ app = create_app()
 if __name__ == "__main__":
     debug = os.getenv("FLASK_DEBUG", "false").strip().lower() in {"1", "true", "yes"}
     port = int(os.getenv("PORT", "5000"))
-    app.run(debug=debug, port=port)
+    app.run(host="0.0.0.0", debug=debug, port=port)
