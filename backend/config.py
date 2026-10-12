@@ -25,9 +25,9 @@ def normalize_database_url(database_url):
     elif ssl_mode and str(ssl_mode).lower() in {"required", "verify_ca", "verify_identity"}:
         connect_args["ssl"] = {}
 
-    if str(ssl_mode).lower() in {"verify_ca", "verify_identity"} if ssl_mode else False:
-        if not ssl_ca:
-            raise ValueError("DATABASE_URL must include ssl-ca when SSL mode verifies certificates.")
+    mode = str(ssl_mode).lower() if ssl_mode else ""
+    if mode in {"verify_ca", "verify_identity"} and not ssl_ca:
+        raise ValueError("DATABASE_URL must include ssl-ca when SSL mode verifies certificates.")
 
     engine_options = {"connect_args": connect_args} if connect_args else {}
     return url.render_as_string(hide_password=False), engine_options
