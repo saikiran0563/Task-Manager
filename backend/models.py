@@ -1,6 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from extensions import db
+
+
+def utcnow_utc_naive():
+    """Return current UTC time as naive for database DATETIME compatibility."""
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
 class User(db.Model):
@@ -10,7 +15,7 @@ class User(db.Model):
     name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow_utc_naive, nullable=False)
 
     tasks = db.relationship(
         "Task", backref="owner", lazy=True, cascade="all, delete-orphan"
@@ -29,9 +34,9 @@ class Task(db.Model):
     status = db.Column(db.String(20), default="pending", nullable=False)
     priority = db.Column(db.String(10), default="medium", nullable=False)
     due_date = db.Column(db.Date, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow_utc_naive, nullable=False)
     updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+        db.DateTime, default=utcnow_utc_naive, onupdate=utcnow_utc_naive, nullable=False
     )
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
 
@@ -66,7 +71,7 @@ class TaskShare(db.Model):
         db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     role = db.Column(db.String(10), nullable=False, default="viewer")
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow_utc_naive, nullable=False)
     shared_with = db.relationship("User", foreign_keys=[shared_with_user_id])
 
 
@@ -83,5 +88,5 @@ class ActivityLog(db.Model):
     )
     action = db.Column(db.String(40), nullable=False)
     details = db.Column(db.String(500), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=utcnow_utc_naive, nullable=False, index=True)
     actor = db.relationship("User", foreign_keys=[actor_id])
