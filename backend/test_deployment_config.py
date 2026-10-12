@@ -1,4 +1,7 @@
-from urllib.parse import quote
+import os
+
+os.environ["DATABASE_URL"] = "sqlite://"
+os.environ["JWT_SECRET_KEY"] = "deployment-test-secret-key-long-enough"
 
 import pytest
 
