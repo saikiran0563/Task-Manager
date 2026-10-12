@@ -2,6 +2,13 @@
 
 A full-stack task management app built with **Python, Flask, React, JavaScript, and MySQL**. It combines task planning with lightweight collaboration, permission-aware sharing, and an activity timeline.
 
+## Live Demo
+
+- **Frontend:** https://task-manager-frontend-s5cz.onrender.com
+- **Backend health check:** https://task-manager-api-kurb.onrender.com/api/health
+
+The app is deployed on free-tier hosting for portfolio and learning purposes. Free services may sleep or have usage/resource limits.
+
 ## Features
 
 - Register and log in with password hashing and JWT authentication
@@ -158,9 +165,9 @@ npm ci
 npm run build
 ```
 
-## Current status
+## Deployment verification
 
-This repository is being upgraded in a feature branch. Deployment and a public live-demo link will be added only after local behavior, automated checks, and production configuration have been verified.
+The deployed application has been browser-tested for registration, login, task creation and persistence, updating, deleting, account isolation, and logout/re-login. The backend health endpoint returns an OK response, and protected endpoints reject unauthenticated requests.
 
 ## Author
 
